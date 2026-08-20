@@ -226,6 +226,7 @@ python src/detect_fraud_unsupervised.py \
 ---
 
 ## Dataset Schema
+<div align="center">
 
 | Column | Description |
 |---|---|
@@ -235,6 +236,7 @@ python src/detect_fraud_unsupervised.py \
 | `region` | User region |
 | `merchant` | Merchant name or type |
 | `amount` | Transaction amount |
+</div>
 
 ---
 
@@ -269,10 +271,12 @@ LEFT JOIN daily_user du ON t.user_id = du.user_id AND t.date = du.date;
 ## Model Output
 
 The pipeline produces a continuous score, not a label:
+<div align="center">
 
 | Column | Meaning |
 |---|---|
 | `anomaly_score` | 0–1, higher = more statistically unusual relative to the rest of the dataset |
+</div>
 
 ```text
 outputs/fraud_scores.csv      every transaction, ranked by anomaly_score
@@ -339,13 +343,15 @@ CI is defined in:
 ## Code Quality
 
 The project separates responsibilities across a small number of modules:
-
+<div align="center">
+        
 | Module | Purpose |
 |---|---|
 | `src/create_db.py` | Loads a transactions CSV into SQLite and creates query indexes |
 | `src/queries.sql` | SQL views and final SELECT that produce the feature table |
 | `src/detect_fraud_unsupervised.py` | Runs the SQL, fits Isolation Forest, normalizes scores, writes artifacts |
 | `src/utils.py` | Filesystem helpers, plotting, and the quote-aware SQL statement splitter |
+</div>
 
 Tooling is configured through `pyproject.toml` (Ruff, Black, mypy, pytest, coverage), `Makefile`, and `.pre-commit-config.yaml`. `src/` is also an installable package (`pip install -e .`).
 
