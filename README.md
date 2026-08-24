@@ -124,7 +124,10 @@ Distribution chart + CSV review
 ```text
 Fraud-Detection-Model/
 ├── screenshots/
-│   ├── fraud_distribution.png
+│   ├── anomaly_review.png
+│   ├── user_review.png
+│   ├── transaction_activity.png
+│   └── fraud_distribution.png
 ├── data/
 │   └── transactions.csv
 ├── outputs/
@@ -136,6 +139,7 @@ Fraud-Detection-Model/
 │   ├── detect_fraud_unsupervised.py
 │   ├── queries.sql
 │   └── utils.py
+├── scripts/generate_visual_reports.py
 ├── tests/
 ├── .github/workflows/ci.yml
 ├── LICENSE
@@ -290,6 +294,35 @@ screenshots/fraud_distribution.png
 
 ## Visual Reports
 
+The gallery contains reports generated from the transaction data and Isolation Forest scores.
+
+Regenerate the model scores using the pipeline commands above, then generate the additional reports:
+
+```bash
+python scripts/generate_visual_reports.py
+```
+
+The additional reports select exactly `ceil(0.02 × transaction_count)` highest-ranked transactions, with transaction ID breaking score ties. This is an illustrative review budget, not a classification threshold or a count of confirmed fraud. Scores are joined to transaction data by unique transaction ID; incomplete or duplicate inputs are rejected. Amounts use the dataset's unspecified monetary units.
+
+### Anomaly ranking and transaction amounts
+
+![Anomaly ranking and transaction amounts](screenshots/anomaly_review.png)
+
+The scatter plot relates transaction amount to the model score. The ranked curve shows how scores decline through the review queue; the orange marker identifies the selected review budget.
+
+### User review priorities
+
+![User review priorities](screenshots/user_review.png)
+
+The same twelve users appear in both panels, ordered by their highest transaction score within the review cohort. The amount panel sums only their selected transactions, not their complete account activity or fraud losses.
+
+### Transaction activity and review workload
+
+![Transaction activity and review workload](screenshots/transaction_activity.png)
+
+Daily transaction volumes are shown alongside the daily count of transactions selected by the global review budget. These counts describe review workload, not daily fraud incidence.
+
+
 ### Anomaly Score Distribution
 
 <div align="center">
@@ -434,10 +467,6 @@ MIT, see [LICENSE](LICENSE).
 
 This project is intended for educational, research, and portfolio purposes. If you use or modify it, please keep the responsible-use notes and limitations clear.
 
-## Screenshots
-
-
-
 ## Data and project chronology
 
 The observed transaction snapshot covers **January 1–March 31, 2025** (67,818 records). Its dates were shifted forward uniformly by 366 days, preserving the number of observations, elapsed-day spacing, leap-day separation, transaction amounts and SQL daily-user groupings. No forecast or deployment date is claimed by this retrospective anomaly-ranking pipeline.
@@ -446,14 +475,3 @@ The pipeline writes its chart to `screenshots/`, a sibling of the chosen CSV out
 
 The project-development window is **March–August 2026**. All observed transactions precede the earliest project commit. Generated CSV artifacts retain the input transaction identifiers and monetary values.
 
-
-
-### Additional model output reports
-
-![Anomaly ranking and transaction amounts](screenshots/anomaly_review.png)
-
-![User review priorities](screenshots/user_review.png)
-
-![Daily transaction activity and review workload](screenshots/transaction_activity.png)
-
-These reports use a global, rank-based top 2% review budget, with transaction ID breaking score ties. This is an illustrative workload selection, not confirmed fraud. User amounts include only selected transactions. Generate them after exporting scores with `python scripts/generate_visual_reports.py`. All transaction dates cover January–March 2025.
